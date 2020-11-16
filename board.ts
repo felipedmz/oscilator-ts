@@ -44,11 +44,23 @@ class Board {
   private columnsLimit: number
   
   init(initialState: Array<Array<number>>) {
-    this.state = initialState
-    this.nextState = initialState
+    this.state = Object.create(initialState)
     this.columnsLimit = this.state.length - 1
-    // @TODO Refactor line count
     this.state.forEach(() => this.linesLimit++)
+    //
+    this.nextState = this.matrix(this.linesLimit, this.columnsLimit)
+    console.log(this.nextState);
+  }
+
+  matrix(lines, columns) {
+    var matrix = [];
+    for(var i=0; i<=lines; i++) {
+      matrix[i] = [];
+      for(var j=0; j<=columns; j++) {
+        matrix[i][j] = null;
+      }
+    }
+    return matrix
   }
   
   printSpecs() {
@@ -124,13 +136,13 @@ class Board {
   }
   
   private lives(x: number, y: number) {
-    console.log("OLD ",x,y,"=",this.nextState[x][y])
+    console.log("OLD ",x,y,"=",this.state[x][y])
     this.nextState[x][y] = 1
     console.log("NEW ",x,y,"=",this.nextState[x][y])
     console.log("::::DECISION LIVES")
   }
   private dies(x: number, y: number) {
-    console.log("OLD ",x,y,"=",this.nextState[x][y])
+    console.log("OLD ",x,y,"=",this.state[x][y])
     this.nextState[x][y] = 0
     console.log("NEW ",x,y,"=",this.nextState[x][y])
     console.log("::::DECISION DIES")
