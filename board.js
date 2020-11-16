@@ -53,7 +53,7 @@ var Board = /** @class */ (function () {
         // @TODO Allow recursiveness
         for (var i = 0; i <= this.linesLimit; i++) {
             for (var j = 0; j <= this.columnsLimit; j++) {
-                console.log("TEST", i, j);
+                console.log("WALKING ON BOARD", i, j);
                 this.checkNeighbors(this.state[i][j], i, j);
             }
         }
@@ -67,20 +67,26 @@ var Board = /** @class */ (function () {
         var avoidSelfCheckY = [-1, 1];
         defaultCheckX.forEach(function (xVariation) {
             var xVariated = x + xVariation;
-            if (xVariated < 0 || xVariated > _this.linesLimit)
+            if (xVariated < 0 || xVariated > _this.linesLimit) {
+                console.log("RETURN, xVariatedCheck=", xVariated);
                 return;
-            //
+            }
             var yCheck = defaultCheckY;
-            if (xVariation == 0)
+            if (xVariation == 0) {
+                console.log("AVOID CHECK SELF, overide yCheck");
                 yCheck = avoidSelfCheckY;
-            //
+            }
             yCheck.forEach(function (yVariation) {
                 var yVariated = y + yVariation;
-                if (yVariated < 0 || yVariated > _this.columnsLimit)
-                    return;
                 console.log("NEIGHBOR", xVariated, yVariated, "VALUE", _this.state[xVariated][yVariated], "ALIVE", _this.isAlive(_this.state[xVariated][yVariated]));
-                if (_this.isAlive(_this.state[xVariated][yVariated]))
+                //
+                if (yVariated < 0 || yVariated > _this.columnsLimit) {
+                    console.log("RETURN");
+                    return;
+                }
+                if (_this.isAlive(_this.state[xVariated][yVariated])) {
                     total++;
+                }
             });
         });
         //
@@ -102,30 +108,32 @@ var Board = /** @class */ (function () {
         }
     };
     Board.prototype.lives = function (x, y) {
-        console.log("OLD=", this.nextState[x][y]);
+        console.log("OLD=", x, y, "=", this.nextState[x][y]);
         this.nextState[x][y] = 1;
-        console.log("NEW=", this.nextState[x][y]);
+        console.log("NEW=", x, y, "=", this.nextState[x][y]);
         console.log("DECISION LIVES");
     };
     Board.prototype.dies = function (x, y) {
-        console.log("OLD=", x, y, this.nextState[x][y]);
+        console.log("OLD=", x, y, "=", this.nextState[x][y]);
         this.nextState[x][y] = 0;
-        console.log("NEW=", x, y, this.nextState[x][y]);
+        console.log("NEW=", x, y, "=", this.nextState[x][y]);
         console.log("DECISION DIES");
     };
     return Board;
 }());
-var board = new Board();
-board.init([
+var oscilatorInitial = [
     [0, 1, 0],
     [0, 1, 0],
     [0, 1, 0]
-]);
+];
+console.log(oscilatorInitial);
+var board = new Board();
+board.init(oscilatorInitial);
 // 0, 0, 0
 // 1,
 board.tick();
 board.print();
-//board.tick();
-//board.print();
-//board.tick();
-//board.print();
+//board.tick()
+//board.print()
+//board.tick()
+//board.print()

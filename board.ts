@@ -40,55 +40,68 @@ class Board {
   
   private state: Array<Array<number>>
   private nextState: Array<Array<number>>
-  private linesLimit: number = 0
+  private linesLimit: number = -1
   private columnsLimit: number
   
   init(initialState: Array<Array<number>>) {
     this.state = initialState
     this.nextState = initialState
-    this.columnsLimit = this.state.length - 1;
+    this.columnsLimit = this.state.length - 1
     // @TODO Refactor line count
     this.state.forEach(() => this.linesLimit++)
-    this.linesLimit--
   }
   
+  printSpecs() {
+    console.log("LINES LIMIT=", this.linesLimit)
+    console.log("COLUMNS LIMIT=", this.columnsLimit)
+  }
+
   print() {
-    console.log(this.state)
+    console.log(this.nextState)
   }
   
   tick() {
     // @TODO Allow recursiveness
     for (let i = 0; i <= this.linesLimit; i++) {
       for (let j = 0; j <= this.columnsLimit; j++) {
-        console.log("TEST", i, j)
-        this.checkNeighbors(this.state[i][j], i, j);
+        console.log("::::WALKING ON BOARD", i, j)
+        this.checkNeighbors(this.state[i][j], i, j)
       }
     }
-    this.state = this.nextState
+    //this.state = this.nextState
   }
   
   private checkNeighbors(cellState: number, x: number, y: number) {
-    let total = 0;
+    let total = 0
     let defaultCheckX = [-1, 0, 1]
     let defaultCheckY = [-1, 0, 1]
     let avoidSelfCheckY = [-1, 1]
     defaultCheckX.forEach((xVariation) => {
       let xVariated = x+xVariation
-      if (xVariated < 0 || xVariated > this.linesLimit)
+      if (xVariated < 0 || xVariated > this.linesLimit) {
+        console.log("RETURN, xVariatedCheck=", xVariated)
         return
-      //
-      let yCheck = defaultCheckY;
-      if (xVariation == 0)
+      }
+      let yCheck = defaultCheckY
+      if (xVariation == 0) {
+        console.log("AVOID CHECK SELF, overide yCheck")
         yCheck = avoidSelfCheckY
-      //
+      }
       yCheck.forEach((yVariation) => {
         let yVariated = y+yVariation
-        if (yVariated < 0 || yVariated > this.columnsLimit)
-          return       
+        if (yVariated < 0) {
+          console.log("RETURN, out of range Ok, NEGATIVE yVariated=",yVariated)
+          return
+        }
+        if (yVariated > this.columnsLimit) {
+          yVariated--;
+          console.log("RETURN, out of range Ok, TOOMUCH yVariated=",yVariated)
+          return
+        }
         console.log("NEIGHBOR", xVariated, yVariated, "VALUE", this.state[xVariated][yVariated], "ALIVE", this.isAlive(this.state[xVariated][yVariated]))
-
-        if (this.isAlive(this.state[xVariated][yVariated]))
+        if (this.isAlive(this.state[xVariated][yVariated])) {
           total++
+        }
       })
     })
     //
@@ -96,7 +109,7 @@ class Board {
   }
 
   private isAlive(cellState): boolean {
-    return cellState == 1;
+    return cellState == 1
   }
   
   private decideDestiny(cellState, liveNeighbors, x, y) {
@@ -111,33 +124,34 @@ class Board {
   }
   
   private lives(x: number, y: number) {
-    console.log("OLD=",this.nextState[x][y])
+    console.log("OLD ",x,y,"=",this.nextState[x][y])
     this.nextState[x][y] = 1
-    console.log("NEW=",this.nextState[x][y])
-    console.log("DECISION LIVES")
+    console.log("NEW ",x,y,"=",this.nextState[x][y])
+    console.log("::::DECISION LIVES")
   }
   private dies(x: number, y: number) {
-    console.log("OLD=",x,y,this.nextState[x][y])
+    console.log("OLD ",x,y,"=",this.nextState[x][y])
     this.nextState[x][y] = 0
-    console.log("NEW=",x,y,this.nextState[x][y])
-    console.log("DECISION DIES")
+    console.log("NEW ",x,y,"=",this.nextState[x][y])
+    console.log("::::DECISION DIES")
   }
 }
 
-let board = new Board();
-board.init([
+
+let oscilatorInitial = [
   [0,1,0],  
   [0,1,0],  
   [0,1,0]
-]);
+]
+console.log(oscilatorInitial)
+let board = new Board()
+board.init(oscilatorInitial)
+board.printSpecs()
+board.tick()
+board.print()
 
-// 0, 0, 0
-// 1,
-board.tick();
-board.print();
+//board.tick()
+//board.print()
 
-//board.tick();
-//board.print();
-
-//board.tick();
-//board.print();
+//board.tick()
+//board.print()
