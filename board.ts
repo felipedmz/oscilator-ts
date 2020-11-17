@@ -43,16 +43,14 @@ class Board {
   private linesLimit: number = -1
   private columnsLimit: number
   
-  init(initialState: Array<Array<number>>) {
+  constructor(initialState: Array<Array<number>>) {
     this.state = Object.create(initialState)
     this.columnsLimit = this.state.length - 1
     this.state.forEach(() => this.linesLimit++)
-    //
-    this.nextState = this.matrix(this.linesLimit, this.columnsLimit)
-    console.log(this.nextState);
+    this.nextState = this.copyFrame(this.linesLimit, this.columnsLimit)
   }
 
-  matrix(lines, columns) {
+  copyFrame(lines, columns) {
     var matrix = [];
     for(var i=0; i<=lines; i++) {
       matrix[i] = [];
@@ -61,11 +59,6 @@ class Board {
       }
     }
     return matrix
-  }
-  
-  printSpecs() {
-    console.log("LINES LIMIT=", this.linesLimit)
-    console.log("COLUMNS LIMIT=", this.columnsLimit)
   }
 
   print() {
@@ -76,11 +69,10 @@ class Board {
     // @TODO Allow recursiveness
     for (let i = 0; i <= this.linesLimit; i++) {
       for (let j = 0; j <= this.columnsLimit; j++) {
-        console.log("::::WALKING ON BOARD", i, j)
+        // console.log("::::WALKING ON BOARD", i, j)
         this.checkNeighbors(this.state[i][j], i, j)
       }
     }
-    //this.state = this.nextState
   }
   
   private checkNeighbors(cellState: number, x: number, y: number) {
@@ -91,26 +83,26 @@ class Board {
     defaultCheckX.forEach((xVariation) => {
       let xVariated = x+xVariation
       if (xVariated < 0 || xVariated > this.linesLimit) {
-        console.log("RETURN, xVariatedCheck=", xVariated)
+        // console.log("RETURN, xVariatedCheck=", xVariated)
         return
       }
       let yCheck = defaultCheckY
       if (xVariation == 0) {
-        console.log("AVOID CHECK SELF, overide yCheck")
+        // console.log("AVOID CHECK SELF, overide yCheck")
         yCheck = avoidSelfCheckY
       }
       yCheck.forEach((yVariation) => {
         let yVariated = y+yVariation
         if (yVariated < 0) {
-          console.log("RETURN, out of range Ok, NEGATIVE yVariated=",yVariated)
+          // console.log("RETURN, out of range Ok, NEGATIVE yVariated=",yVariated)
           return
         }
         if (yVariated > this.columnsLimit) {
           yVariated--;
-          console.log("RETURN, out of range Ok, TOOMUCH yVariated=",yVariated)
+          // console.log("RETURN, out of range Ok, TOOMUCH yVariated=",yVariated)
           return
         }
-        console.log("NEIGHBOR", xVariated, yVariated, "VALUE", this.state[xVariated][yVariated], "ALIVE", this.isAlive(this.state[xVariated][yVariated]))
+        // console.log("NEIGHBOR", xVariated, yVariated, "VALUE", this.state[xVariated][yVariated], "ALIVE", this.isAlive(this.state[xVariated][yVariated]))
         if (this.isAlive(this.state[xVariated][yVariated])) {
           total++
         }
@@ -125,7 +117,7 @@ class Board {
   }
   
   private decideDestiny(cellState, liveNeighbors, x, y) {
-    console.log("VALUE", cellState, "TOTAL", liveNeighbors)  
+    // console.log("VALUE", cellState, "TOTAL", liveNeighbors)  
     if (this.isAlive(cellState) && (liveNeighbors == 2 || liveNeighbors == 3)) {
       this.lives(x, y)
     } else if (!this.isAlive(cellState) && liveNeighbors == 3) {
@@ -136,29 +128,24 @@ class Board {
   }
   
   private lives(x: number, y: number) {
-    console.log("OLD ",x,y,"=",this.state[x][y])
+    // console.log("OLD ",x,y,"=",this.state[x][y])
     this.nextState[x][y] = 1
-    console.log("NEW ",x,y,"=",this.nextState[x][y])
-    console.log("::::DECISION LIVES")
+    // console.log("NEW ",x,y,"=",this.nextState[x][y])
+    // console.log("::::DECISION LIVES")
   }
   private dies(x: number, y: number) {
-    console.log("OLD ",x,y,"=",this.state[x][y])
+    // console.log("OLD ",x,y,"=",this.state[x][y])
     this.nextState[x][y] = 0
-    console.log("NEW ",x,y,"=",this.nextState[x][y])
-    console.log("::::DECISION DIES")
+    // console.log("NEW ",x,y,"=",this.nextState[x][y])
+    // console.log("::::DECISION DIES")
   }
 }
 
-
-let oscilatorInitial = [
+let board = new Board([
   [0,1,0],  
   [0,1,0],  
   [0,1,0]
-]
-console.log(oscilatorInitial)
-let board = new Board()
-board.init(oscilatorInitial)
-board.printSpecs()
+])
 board.tick()
 board.print()
 
